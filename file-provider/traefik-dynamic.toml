@@ -1,0 +1,17 @@
+[http]
+  # Add the router
+  [http.routers.my-router]
+    entryPoints = ["http"]
+    service = "service-http"
+    rule = "PathPrefix(`/`)"
+
+  [http.middlewares.httpHeader.headers]
+    accessControlMaxAge = 300
+
+  # Add the service
+  [http.services]
+    [http.services.service-http.loadBalancer]
+      [[http.services.service-http.loadBalancer.servers]]
+        url = "http://127.0.0.1:81"
+      [[http.services.service-http.loadBalancer.servers]]
+        url = "http://127.0.0.1:82"

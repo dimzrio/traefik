@@ -1,0 +1,20 @@
+defaultEntryPoints = ["http"]
+
+[api]
+  dashboard = true
+  insecure = true
+  debug = true
+
+[metrics]
+  [metrics.prometheus]
+    addEntryPointsLabels = true
+    addServicesLabels = true
+    entryPoint = "http"
+
+[entryPoints]
+  [entryPoints.http]
+    address = ":8888"
+
+[providers]
+  [providers.file]
+    filename = "traefik-dynamic.toml"
