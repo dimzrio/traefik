@@ -15,7 +15,7 @@ defaultEntryPoints = ["http"]
   [entryPoints.http]
     address = ":8888"
 
-  [entryPoints.http]
+  [entryPoints.api]
     address = ":8080"
 
 [providers]
