@@ -4,9 +4,20 @@
     entryPoints = ["http"]
     service = "service-http"
     rule = "PathPrefix(`/`)"
+  
+  # Secure api
+  [http.routers.my-api]
+    entryPoints = ["api"]
+    rule = "(PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+    service = "api@internal"
+    middlewares = ["auth"]
 
-  [http.middlewares.httpHeader.headers]
-    accessControlMaxAge = 300
+  # Middleware for secure api
+  [http.middlewares]
+    [http.middlewares.auth.basicAuth]
+    users = [
+      "test:$apr1$iOcqZeiB$rn/81r4ckD1XlPuFgOtBn/",
+      ]
 
   # Add the service
   [http.services]
