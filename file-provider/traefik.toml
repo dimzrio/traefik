@@ -2,7 +2,7 @@ defaultEntryPoints = ["http"]
 
 [api]
   dashboard = true
-  insecure = true
+  #insecure = true
   debug = true
 
 [metrics]
@@ -14,6 +14,9 @@ defaultEntryPoints = ["http"]
 [entryPoints]
   [entryPoints.http]
     address = ":8888"
+
+  [entryPoints.http]
+    address = ":8080"
 
 [providers]
   [providers.file]
