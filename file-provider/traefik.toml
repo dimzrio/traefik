@@ -1,23 +1,36 @@
-defaultEntryPoints = ["http"]
+defaultEntryPoints = ["http", "https"]
 
+# enable dashboard
 [api]
-  dashboard = true
-  #insecure = true
-  debug = true
+    dashboard = true
+    #insecure = true
 
-[metrics]
-  [metrics.prometheus]
-    addEntryPointsLabels = true
-    addServicesLabels = true
-    entryPoint = "http"
-
+# create entrypoint
 [entryPoints]
-  [entryPoints.http]
-    address = ":8888"
+    [entryPoints.http]
+        address = ":80"
+        
+        # create redirect entrypoint 80 to 443
+        [entryPoints.http.http.redirections]
+            [entryPoints.http.http.redirections.entryPoint]
+                to = "https"
+                scheme = "https"
+                permanent = true
 
-  [entryPoints.api]
-    address = ":8080"
+    [entryPoints.https]
+        address = ":443"
 
+    [entryPoints.api]
+        address = ":8080"
+
+# enable prometheus metrics
+[metrics]
+    [metrics.prometheus]
+        addEntryPointsLabels = true
+        addServicesLabels = true
+        entryPoint = "http"
+
+# user file provider
 [providers]
-  [providers.file]
-    filename = "traefik-dynamic.toml"
+    [providers.file]    
+        filename = "traefik-dynamic.toml"

@@ -1,28 +1,43 @@
 [http]
-  # Add the router
-  [http.routers.my-router]
-    entryPoints = ["http"]
-    service = "service-http"
-    rule = "PathPrefix(`/`)"
-  
-  # Secure api
-  [http.routers.my-api]
-    entryPoints = ["api"]
-    rule = "(PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
-    service = "api@internal"
-    middlewares = ["auth"]
 
-  # Middleware for secure api
-  [http.middlewares]
-    [http.middlewares.auth.basicAuth]
-    users = [
-      "test:$apr1$iOcqZeiB$rn/81r4ckD1XlPuFgOtBn/",
-      ]
+    # create router for http
+    [http.routers.my-routers]
+        entryPoints = ["http", "https"]
+        service = "service-http"
+        middlewares = ["redirect"]
+        rule = "Host(`www.dimzrio.com`) && PathPrefix(`/`)"
 
-  # Add the service
-  [http.services]
-    [http.services.service-http.loadBalancer]
-      [[http.services.service-http.loadBalancer.servers]]
-        url = "http://127.0.0.1:81"
-      [[http.services.service-http.loadBalancer.servers]]
-        url = "http://127.0.0.1:82"
+        [http.routers.my-routers.tls]
+            [[tls.certificates]]
+                # openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout dimzrio.com.key -out dimzrio.com.crt
+                certFile = "/home/vagrant/file-provider/ssl/dimzrio.com.crt"
+                keyFile = "/home/vagrant/file-provider/ssl/dimzrio.com.key"
+
+    # create router for api & dashboard
+    [http.routers.my-api]
+        entryPoints = ["api"]
+        service = "api@internal"
+        middlewares = ["auth"]
+        rule = "PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+
+    # create middleware for enable htpasswd
+    [http.middlewares]
+
+        # htpasswd dashboard & api
+        [http.middlewares.auth.basicAuth]
+            users = [
+                "rio:$apr1$EKwOMpgF$9/Qu76wXWfvC.nH2wpVeR1"
+            ]
+        
+        # redirect scheme to https
+        [http.middlewares.redirect.redirectScheme]
+            scheme = "https"
+            permanent = true
+
+    # create load balancer for service-http
+    [http.services]
+        [http.services.service-http.loadBalancer]
+            [[http.services.service-http.loadBalancer.servers]]
+                url = "http://192.168.56.102/"
+            [[http.services.service-http.loadBalancer.servers]]
+                url = "http://192.168.56.103/" 
