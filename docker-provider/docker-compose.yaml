@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  # create route /sample to tomcat container
+  webapps:
+    container_name: tomcat
+    image: tomcat:latest
+    restart: always
+    volumes:
+      - ./sample.war:/usr/local/tomcat/webapps/sample.war
+    labels:
+      - "traefik.http.routers.webapps.rule=Host(`www.dimzrio.com`) && PathPrefix(`/sample`)"
+      - "traefik.http.routers.webapps.tls=true"
+      - "traefik.http.services.webapps.loadbalancer.server.port=8080"
+  
+  # create route /flask to python flask container
+  flaskapps:
+    container_name: flaskapps
+    image: dimzrio/simple-flask:latest
+    restart: always
+    labels:
+      - "traefik.http.routers.flaskapps.rule=Host(`www.dimzrio.com`) && PathPrefix(`/flask`)"
+      - "traefik.http.routers.flaskapps.tls=true"
+      - "traefik.http.services.flaskapps.loadbalancer.server.port=5000"

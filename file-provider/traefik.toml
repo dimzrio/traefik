@@ -34,3 +34,5 @@ defaultEntryPoints = ["http", "https"]
 [providers]
     [providers.file]    
         filename = "traefik-dynamic.toml"
+    [providers.docker]
+        endpoint = "unix:///var/run/docker.sock"
